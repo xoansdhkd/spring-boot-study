@@ -1,10 +1,12 @@
 package com.example.test.service;
 
+import com.example.test.domain.user.Role;
 import com.example.test.domain.user.User;
 import com.example.test.domain.user.UserRepository;
 import com.example.test.web.dto.ResponseDto;
 import com.example.test.web.dto.accounts.AccountsRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +17,7 @@ import java.util.Optional;
 public class AccountsService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     @Transactional
     public ResponseDto signup(AccountsRequestDto req) {
         Optional<User> user = userRepository.findByUserName(req.getUserName());
@@ -25,7 +28,15 @@ public class AccountsService {
                     .build();
         }
 
-        userRepository.save(req.toEntity());
+        User newUser = User.builder()
+                .userName(req.getUserName())
+                .password(passwordEncoder.encode(req.getPassword()))
+                .name(req.getName())
+                .phone(req.getPhone())
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(newUser);
 
         return ResponseDto.builder()
                 .resCode(1)
@@ -39,7 +50,7 @@ public class AccountsService {
 
         if(user.isEmpty()
                 || !user.get().getUserName().equals(req.getUserName())
-                || !user.get().getPassword().equals(req.getPassword())) {
+                || !passwordEncoder.matches(req.getPassword(), user.get().getPassword())) {
             return ResponseDto.builder()
                     .resCode(0)
                     .message("아이디 혹은 비밀번호를 확인해주세요.")
