@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class SignupRequestDto {
+public class AccountsRequestDto {
 
     private String userName;
     private String password;
@@ -16,11 +16,17 @@ public class SignupRequestDto {
     private String phone;
 
     @Builder
-    public SignupRequestDto(String userName, String password, String name, String phone) {
+    public AccountsRequestDto(String userName, String password, String name, String phone) {
         this.userName = userName;
         this.password = password;
         this.name = name;
         this.phone = phone;
+    }
+
+    @Builder
+    public AccountsRequestDto(String userName, String password) {
+        this.userName = userName;
+        this.password = password;
     }
 
     public User toEntity() {

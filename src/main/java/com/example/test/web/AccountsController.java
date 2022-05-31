@@ -1,8 +1,8 @@
 package com.example.test.web;
 
 import com.example.test.service.AccountsService;
-import com.example.test.web.dto.accounts.SignupRequestDto;
-import com.example.test.web.dto.accounts.SignupResponseDto;
+import com.example.test.web.dto.ResponseDto;
+import com.example.test.web.dto.accounts.AccountsRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +16,13 @@ public class AccountsController {
 
     // 회원 가입
     @PostMapping("/signup")
-    public SignupResponseDto save(@RequestBody SignupRequestDto req) {
+    public ResponseDto signup(@RequestBody AccountsRequestDto req) {
         return accountsService.signup(req);
     }
+
+    @PostMapping("/signin")
+    public ResponseDto signin(@RequestBody AccountsRequestDto req) {
+        return accountsService.signin(req);
+    }
+
 }

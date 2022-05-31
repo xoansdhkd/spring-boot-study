@@ -1,4 +1,4 @@
-package com.example.test.web.dto.accounts;
+package com.example.test.web.dto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -6,13 +6,14 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class SignupResponseDto {
+public class ResponseDto {
 
+    // res 샘플
     private Integer resCode;
     private String message;
 
     @Builder
-    public SignupResponseDto(Integer resCode, String message) {
+    public ResponseDto(Integer resCode, String message) {
         this.resCode = resCode;
         this.message = message;
     }
