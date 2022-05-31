@@ -1,4 +1,4 @@
-package com.example.test.web;
+package com.example.test.web.controller;
 
 import com.example.test.service.AccountsService;
 import com.example.test.web.dto.ResponseDto;
