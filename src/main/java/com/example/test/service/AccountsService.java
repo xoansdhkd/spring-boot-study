@@ -20,23 +20,18 @@ public class AccountsService {
     private final PasswordEncoder passwordEncoder;
     @Transactional
     public ResponseDto signup(AccountsRequestDto req) {
-        Optional<User> user = userRepository.findByUserName(req.getUserName());
-        if (!user.isEmpty()) {
+        Optional<User> findUser = userRepository.findByUserName(req.getUserName());
+        if (!findUser.isEmpty()) {
             return ResponseDto.builder()
                     .resCode(0)
                     .message("이미 존재하는 회원입니다.")
                     .build();
         }
 
-        User newUser = User.builder()
-                .userName(req.getUserName())
-                .password(passwordEncoder.encode(req.getPassword()))
-                .name(req.getName())
-                .phone(req.getPhone())
-                .role(Role.USER)
-                .build();
+        User user = req.toEntity();
+        user.encodePassword(passwordEncoder.encode(req.getPassword()));
 
-        userRepository.save(newUser);
+        userRepository.save(user);
 
         return ResponseDto.builder()
                 .resCode(1)
@@ -46,11 +41,11 @@ public class AccountsService {
 
     @Transactional
     public ResponseDto signin(AccountsRequestDto req) {
-        Optional<User> user = userRepository.findByUserName(req.getUserName());
+        Optional<User> findUser = userRepository.findByUserName(req.getUserName());
 
-        if(user.isEmpty()
-                || !user.get().getUserName().equals(req.getUserName())
-                || !passwordEncoder.matches(req.getPassword(), user.get().getPassword())) {
+        if(findUser.isEmpty()
+                || !findUser.get().getUserName().equals(req.getUserName())
+                || !passwordEncoder.matches(req.getPassword(), findUser.get().getPassword())) {
             return ResponseDto.builder()
                     .resCode(0)
                     .message("아이디 혹은 비밀번호를 확인해주세요.")

@@ -41,4 +41,8 @@ public class User {
         this.role = role;
     }
 
+    public void encodePassword(String password) {
+        this.password = password;
+    }
+
 }
