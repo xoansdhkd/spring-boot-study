@@ -6,6 +6,7 @@ import com.example.test.domain.user.UserRepository;
 import com.example.test.web.dto.ResponseDto;
 import com.example.test.web.dto.accounts.AccountsRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +18,7 @@ import java.util.Optional;
 public class AccountsService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     @Transactional
     public ResponseDto signup(AccountsRequestDto req) {
         Optional<User> findUser = userRepository.findByUserName(req.getUserName());
@@ -29,7 +30,7 @@ public class AccountsService {
         }
 
         User user = req.toEntity();
-        user.encodePassword(passwordEncoder.encode(req.getPassword()));
+        user.encodePassword(bCryptPasswordEncoder.encode(req.getPassword()));
 
         userRepository.save(user);
 
@@ -45,7 +46,7 @@ public class AccountsService {
 
         if(findUser.isEmpty()
                 || !findUser.get().getUserName().equals(req.getUserName())
-                || !passwordEncoder.matches(req.getPassword(), findUser.get().getPassword())) {
+                || !bCryptPasswordEncoder.matches(req.getPassword(), findUser.get().getPassword())) {
             return ResponseDto.builder()
                     .resCode(0)
                     .message("아이디 혹은 비밀번호를 확인해주세요.")
