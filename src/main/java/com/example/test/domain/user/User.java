@@ -17,7 +17,7 @@ public class User {
     private Long id;
 
     @Column(nullable = false)
-    private String userName;
+    private String username;
 
     @Column(nullable = false)
     private String password;
@@ -28,13 +28,12 @@ public class User {
     @Column(nullable = false)
     private String phone;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;
+    private String role;
 
     @Builder
-    public User(String userName, String password, String name, String phone, Role role) {
-        this.userName = userName;
+    public User(String username, String password, String name, String phone, String role) {
+        this.username = username;
         this.password = password;
         this.name = name;
         this.phone = phone;

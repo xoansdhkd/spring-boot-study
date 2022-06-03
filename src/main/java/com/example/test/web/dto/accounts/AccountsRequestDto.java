@@ -10,32 +10,32 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AccountsRequestDto {
 
-    private String userName;
+    private String username;
     private String password;
     private String name;
     private String phone;
 
     @Builder
-    public AccountsRequestDto(String userName, String password, String name, String phone) {
-        this.userName = userName;
+    public AccountsRequestDto(String username, String password, String name, String phone) {
+        this.username = username;
         this.password = password;
         this.name = name;
         this.phone = phone;
     }
 
     @Builder
-    public AccountsRequestDto(String userName, String password) {
-        this.userName = userName;
+    public AccountsRequestDto(String username, String password) {
+        this.username = username;
         this.password = password;
     }
 
     public User toEntity() {
         return User.builder()
-                .userName(userName)
+                .username(username)
                 .password(password)
                 .name(name)
                 .phone(phone)
-                .role(Role.USER)
+                .role(Role.ROLE_USER)
                 .build();
     }
 }

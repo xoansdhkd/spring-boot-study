@@ -21,8 +21,8 @@ public class AccountsService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     @Transactional
     public ResponseDto signup(AccountsRequestDto req) {
-        Optional<User> findUser = userRepository.findByUserName(req.getUserName());
-        if (!findUser.isEmpty()) {
+        User findUser = userRepository.findByUsername(req.getUsername());
+        if (findUser != null) {
             return ResponseDto.builder()
                     .resCode(0)
                     .message("이미 존재하는 회원입니다.")
@@ -42,11 +42,11 @@ public class AccountsService {
 
     @Transactional
     public ResponseDto signin(AccountsRequestDto req) {
-        Optional<User> findUser = userRepository.findByUserName(req.getUserName());
+        User findUser = userRepository.findByUsername(req.getUsername());
 
-        if(findUser.isEmpty()
-                || !findUser.get().getUserName().equals(req.getUserName())
-                || !bCryptPasswordEncoder.matches(req.getPassword(), findUser.get().getPassword())) {
+        if(findUser == null
+                || !findUser.getUsername().equals(req.getUsername())
+                || !bCryptPasswordEncoder.matches(req.getPassword(), findUser.getPassword())) {
             return ResponseDto.builder()
                     .resCode(0)
                     .message("아이디 혹은 비밀번호를 확인해주세요.")

@@ -6,6 +6,7 @@ import com.example.test.web.dto.accounts.AccountsRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin
 @RequestMapping("/accounts")
 @RequiredArgsConstructor
 @RestController
