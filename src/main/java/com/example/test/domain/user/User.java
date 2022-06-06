@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -29,15 +32,22 @@ public class User {
     private String phone;
 
     @Column(nullable = false)
-    private String role;
+    private String roles;
 
     @Builder
-    public User(String username, String password, String name, String phone, String role) {
+    public User(String username, String password, String name, String phone, String roles) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.phone = phone;
-        this.role = role;
+        this.roles = roles;
+    }
+
+    public List<String> getRoleList(){
+        if(this.roles.length()>0){
+            return Arrays.asList(this.roles.split(","));
+        }
+        return new ArrayList<>();
     }
 
     public void encodePassword(String password) {

@@ -5,11 +5,15 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.example.test.config.security.jwt.JwtTokenProvider;
 import com.example.test.domain.user.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -18,19 +22,24 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 
-public class ApiLoginFilter extends AbstractAuthenticationProcessingFilter {
+public class ApiLoginFilter extends UsernamePasswordAuthenticationFilter {
 
+    private AuthenticationManager authenticationManager;
     private JwtTokenProvider jwtTokenProvider;
 
-    public ApiLoginFilter(String defaultFilterProcessesUrl, JwtTokenProvider jwtTokenProvider) {
-        super(defaultFilterProcessesUrl);
+    public ApiLoginFilter(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
     }
-
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        System.out.println("--------------- ApiLoginFilter ---------------");
         ObjectMapper om = new ObjectMapper();
-        User user = om.readValue(request.getInputStream(), User.class);
+        User user = null;
+        try {
+            user = om.readValue(request.getInputStream(), User.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         String username = user.getUsername();
         String password = user.getPassword();

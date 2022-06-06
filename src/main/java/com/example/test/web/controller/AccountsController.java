@@ -25,4 +25,14 @@ public class AccountsController {
         return accountsService.signin(req);
     }
 
+    @PostMapping("/main")
+    public void main() {
+        System.out.println("토큰 인증 성공");
+    }
+
+    @PostMapping("/admin")
+    public void admin() {
+        System.out.println("관리자 페이지");
+    }
+
 }

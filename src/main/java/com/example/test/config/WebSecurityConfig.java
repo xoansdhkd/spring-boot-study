@@ -26,12 +26,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.formLogin().disable()
                 .csrf().disable()
-                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(apiCheckFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(apiLoginFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(corsFilter, ApiLoginFilter.class)
+                .addFilter(apiCheckFilter())
+                .addFilter(apiLoginFilter())
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .authorizeRequests().antMatchers("/**").permitAll();
+                .authorizeRequests()
+                .antMatchers("/accounts/main/**").access("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+                .antMatchers("/accounts/admin/**").access("hasRole('ROLE_ADMIN')")
+                .anyRequest().permitAll();
     }
 
     @Bean
@@ -40,15 +43,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public ApiCheckFilter apiCheckFilter() {
-        return new ApiCheckFilter("/main", jwtTokenProvider);
+    public ApiCheckFilter apiCheckFilter() throws Exception {
+        return new ApiCheckFilter(authenticationManager(), jwtTokenProvider, userRepository);
     }
 
     @Bean
     public ApiLoginFilter apiLoginFilter() throws Exception {
-        ApiLoginFilter apiLoginFilter = new ApiLoginFilter("/accounts/signin", jwtTokenProvider);
+        ApiLoginFilter apiLoginFilter = new ApiLoginFilter(jwtTokenProvider);
         apiLoginFilter.setAuthenticationManager(authenticationManager());
-
         return apiLoginFilter;
     }
 
