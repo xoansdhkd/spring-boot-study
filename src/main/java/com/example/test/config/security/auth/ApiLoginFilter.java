@@ -3,6 +3,8 @@ package com.example.test.config.security.auth;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.example.test.config.security.jwt.JwtTokenProvider;
+import com.example.test.domain.auth.Auth;
+import com.example.test.domain.auth.AuthRepository;
 import com.example.test.domain.user.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -25,10 +27,12 @@ import java.util.Date;
 public class ApiLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private AuthenticationManager authenticationManager;
+    private AuthRepository authRepository;
     private JwtTokenProvider jwtTokenProvider;
 
-    public ApiLoginFilter(JwtTokenProvider jwtTokenProvider) {
+    public ApiLoginFilter(JwtTokenProvider jwtTokenProvider, AuthRepository authRepository) {
         this.jwtTokenProvider = jwtTokenProvider;
+        this.authRepository = authRepository;
     }
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -57,12 +61,28 @@ public class ApiLoginFilter extends UsernamePasswordAuthenticationFilter {
         System.out.println("successfulAuthentication 실행됨 : 인증이 완료되었다!");
 
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
-        try {
-            String token = jwtTokenProvider.creatAccessToken(username);
-            response.setHeader(jwtTokenProvider.getACCESS_TOKEN_HEADER(), jwtTokenProvider.getACCESS_TOKEN_PREFIX() + token);
-        } catch (Exception e) {
-            e.printStackTrace();
+
+
+        Auth findAuth = authRepository.findByUsername(username);
+        String refreshToken = "";
+        // 리프레시 토큰이 데이터베이스 없다면
+        // 새로 리프레시 토큰 생성
+        if (findAuth == null) {
+            refreshToken = jwtTokenProvider.createRefreshToken(username);
+            Auth auth = Auth.builder()
+                    .username(username)
+                    .token(refreshToken)
+                    .build();
+
+            authRepository.save(auth);
         }
+
+        // 액세스 토큰 생성
+        String accessToken = jwtTokenProvider.createAccessToken(username);
+        // 전달
+        response.setHeader(jwtTokenProvider.getACCESS_TOKEN_HEADER(), jwtTokenProvider.getACCESS_TOKEN_PREFIX() + accessToken);
+        response.setHeader(jwtTokenProvider.getREFRESH_TOKEN_HEADER(), jwtTokenProvider.getREFRESH_TOKEN_PREFIX() + refreshToken);
+
     }
 
     @Override

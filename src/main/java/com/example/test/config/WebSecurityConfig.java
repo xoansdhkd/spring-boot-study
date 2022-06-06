@@ -4,6 +4,7 @@ import com.example.test.config.security.auth.ApiCheckFilter;
 import com.example.test.config.security.auth.ApiLoginFilter;
 import com.example.test.config.security.cors.CORSFilter;
 import com.example.test.config.security.jwt.JwtTokenProvider;
+import com.example.test.domain.auth.AuthRepository;
 import com.example.test.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserRepository userRepository;
+    private final AuthRepository authRepository;
     private final CORSFilter corsFilter;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -44,12 +46,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public ApiCheckFilter apiCheckFilter() throws Exception {
-        return new ApiCheckFilter(authenticationManager(), jwtTokenProvider, userRepository);
+        return new ApiCheckFilter(authenticationManager(), jwtTokenProvider, userRepository, authRepository);
     }
 
     @Bean
     public ApiLoginFilter apiLoginFilter() throws Exception {
-        ApiLoginFilter apiLoginFilter = new ApiLoginFilter(jwtTokenProvider);
+        ApiLoginFilter apiLoginFilter = new ApiLoginFilter(jwtTokenProvider, authRepository);
         apiLoginFilter.setAuthenticationManager(authenticationManager());
         return apiLoginFilter;
     }
