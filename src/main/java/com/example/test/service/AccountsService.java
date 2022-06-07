@@ -19,7 +19,6 @@ import java.util.Optional;
 @Service
 public class AccountsService {
 
-    private final ResponseDto res;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     @Transactional
