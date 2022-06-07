@@ -76,6 +76,19 @@ public class ApiLoginFilter extends UsernamePasswordAuthenticationFilter {
 
             authRepository.save(auth);
         }
+        else {
+            // DB에 리프레시 토큰이 있다면 가져오기
+            refreshToken = findAuth.getToken();
+
+            // 만료된 리프레시 토큰이면 새거 만들기
+            if (!jwtTokenProvider.isValidRefreshToken(refreshToken)) {
+                refreshToken = jwtTokenProvider.createRefreshToken(username);
+                // 토큰 레포지토리에서 업데이트?
+                Auth auth = authRepository.findByUsername(username);
+                authRepository.delete(auth);
+            }
+
+        }
 
         // 액세스 토큰 생성
         String accessToken = jwtTokenProvider.createAccessToken(username);

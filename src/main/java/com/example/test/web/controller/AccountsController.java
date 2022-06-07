@@ -4,6 +4,7 @@ import com.example.test.service.AccountsService;
 import com.example.test.web.dto.ResponseDto;
 import com.example.test.web.dto.accounts.AccountsRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin

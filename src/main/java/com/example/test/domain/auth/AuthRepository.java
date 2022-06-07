@@ -6,8 +6,9 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface AuthRepository extends JpaRepository<Auth, Long> {
+public interface AuthRepository extends JpaRepository<Auth, String> {
 
     Auth findByUsername(String username);
+    Auth findByToken(String token);
 
 }

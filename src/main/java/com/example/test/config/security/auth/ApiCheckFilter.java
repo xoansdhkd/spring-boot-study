@@ -23,18 +23,9 @@ import java.io.IOException;
 
 public class ApiCheckFilter extends BasicAuthenticationFilter {
 
-//    private AntPathMatcher antPathMatcher;
-//    private String pattern;
     private JwtTokenProvider jwtTokenProvider;
     private UserRepository userRepository;
     private AuthRepository authRepository;
-
-//    public ApiCheckFilter(String pattern, JwtTokenProvider jwtTokenProvider, UserRepository userRepository) {
-//        this.antPathMatcher = new AntPathMatcher();
-//        this.pattern = pattern;
-//        this.jwtTokenProvider = jwtTokenProvider;
-//        this.userRepository = userRepository;
-//    }
 
     public ApiCheckFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserRepository userRepository, AuthRepository authRepository) {
         super(authenticationManager);
@@ -79,11 +70,10 @@ public class ApiCheckFilter extends BasicAuthenticationFilter {
             filterChain.doFilter(request, response);
         } else {
             // 액세스 토큰 만료
-            // 리프레시 토큰 DB에서 가져오기
             System.out.println("[WARN] Expired Access Token");
 
 
-            // 리프레시 토큰에서 이름 가져오기
+            // 리프레시 토큰 헤더에서 토큰값 가져오기
             String refreshTokenHeader = jwtTokenProvider.getRefreshTokenFromHeader(request);
             String clientRefreshToken = refreshTokenHeader.split(" ")[1];
 
@@ -125,7 +115,8 @@ public class ApiCheckFilter extends BasicAuthenticationFilter {
                 System.out.println("db에서 삭제");
 
                 // 여기 에러남 어쩌지 - username을 어디서 받아와야되지
-                authRepository.delete(authRepository.findByUsername(username));
+                Auth auth = authRepository.findByToken(clientRefreshToken);
+                authRepository.delete(auth);
                 return;
             }
             

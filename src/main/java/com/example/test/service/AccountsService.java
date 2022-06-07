@@ -6,6 +6,8 @@ import com.example.test.domain.user.UserRepository;
 import com.example.test.web.dto.ResponseDto;
 import com.example.test.web.dto.accounts.AccountsRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,13 +19,14 @@ import java.util.Optional;
 @Service
 public class AccountsService {
 
+    private final ResponseDto res;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     @Transactional
     public ResponseDto signup(AccountsRequestDto req) {
         User findUser = userRepository.findByUsername(req.getUsername());
         if (findUser != null) {
-            return ResponseDto.builder()
+            ResponseDto.builder()
                     .resCode(0)
                     .message("이미 존재하는 회원입니다.")
                     .build();

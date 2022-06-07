@@ -13,9 +13,6 @@ import javax.persistence.*;
 public class Auth {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private Long id;
-
     @Column(nullable = false)
     private String username;
 
