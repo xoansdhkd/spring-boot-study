@@ -97,7 +97,6 @@ public class ApiCheckFilter extends BasicAuthenticationFilter {
                     String newAccessToken = jwtTokenProvider.createAccessToken(username);
                     // 전달
                     response.setHeader(jwtTokenProvider.getACCESS_TOKEN_HEADER(), jwtTokenProvider.getACCESS_TOKEN_PREFIX() + newAccessToken);
-                    System.out.println("이걸로 세로 세팅해줘야됨");
                 }
                 else {
                     // 다르다면
